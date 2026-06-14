@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>电子投票密码学可视化系统</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- 侧边导航 -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h2>🗳️ 电子投票</h2>
+      <p class="subtitle">密码学可视化系统</p>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item active" data-page="overview">📊 系统概述</li>
+      <li class="nav-item" data-page="setup">🔑 系统设置</li>
+      <li class="nav-item" data-page="encrypt">🔒 加密演示</li>
+      <li class="nav-item" data-page="vote">🗳️ 投票模拟</li>
+      <li class="nav-item" data-page="proof">🛡️ 零知识证明</li>
+      <li class="nav-item" data-page="ec">📐 椭圆曲线</li>
+    </ul>
+    <div class="sidebar-footer">
+      <p>课程设计 · 2026</p>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="content">
+    <!-- ===== 系统概述 ===== -->
+    <section id="page-overview" class="page active">
+      <h1>电子投票密码学系统</h1>
+      <p class="desc">基于 ElGamal 加密体系，实现安全、可验证、隐私保护的电子投票。</p>
+
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-icon">🔐</div>
+          <h3>ElGamal 加密</h3>
+          <p>基于离散对数难题的公钥加密系统，支持有限域和椭圆曲线两种实现。</p>
+        </div>
+        <div class="arch-card">
+          <div class="arch-icon">➕</div>
+          <h3>同态加密</h3>
+          <p>密文可直接相加，结果解密后等于明文之和。<br><code>E(m₁)·E(m₂) = E(m₁+m₂)</code></p>
+        </div>
+        <div class="arch-card">
+          <div class="arch-icon">🤝</div>
+          <h3>分布式密钥</h3>
+          <p>多方参与的密钥生成和解密，需要所有参与方合作才能解密。</p>
+        </div>
+        <div class="arch-card">
+          <div class="arch-icon">🛡️</div>
+          <h3>零知识证明</h3>
+          <p>Schnorr / Chaum-Pedersen 证明，确保密钥知识、投票正确性和解密合法性。</p>
+        </div>
+      </div>
+
+      <div class="flow-section">
+        <h2>投票流程</h2>
+        <div class="flow-steps">
+          <div class="flow-step"><span class="step-num">1</span><b>系统设置</b><br>生成参数 p,q,g 和密钥对 (sk,h)</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="step-num">2</span><b>投票加密</b><br>选民加密投票 E(0) 或 E(1)</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="step-num">3</span><b>同态计票</b><br>密文相加 E(sum) = ∏E(vᵢ)</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><span class="step-num">4</span><b>解密公布</b><br>解密总和，公布结果</div>
+        </div>
+      </div>
+
+      <div class="formula-section">
+        <h2>核心公式</h2>
+        <div class="formula-grid">
+          <div class="formula-card">
+            <h4>加密</h4>
+            <code>a = g<sup>r</sup> mod p</code><br>
+            <code>b = h<sup>r</sup> · g<sup>m</sup> mod p</code>
+          </div>
+          <div class="formula-card">
+            <h4>解密</h4>
+            <code>s = a<sup>sk</sup> mod p</code><br>
+            <code>m = decode(b · s<sup>-1</sup>)</code>
+          </div>
+          <div class="formula-card">
+            <h4>同态加法</h4>
+            <code>a<sub>sum</sub> = ∏a<sub>i</sub> mod p</code><br>
+            <code>b<sub>sum</sub> = ∏b<sub>i</sub> mod p</code>
+          </div>
+          <div class="formula-card">
+            <h4>零知识证明</h4>
+            <code>c = H(id, commitment)</code><br>
+            <code>d = a + c·sk mod q</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 系统设置 ===== -->
+    <section id="page-setup" class="page">
+      <h1>🔑 系统设置</h1>
+      <p class="desc">生成有限域 ElGamal 的系统参数和密钥对。</p>
+
+      <div class="card-row">
+        <div class="card">
+          <h3>参数选择</h3>
+          <div class="form-group">
+            <label>素数 p（安全素数：q=(p-1)/2 也是素数）</label>
+            <input type="number" id="setup-p" value="23" min="7">
+          </div>
+          <div class="form-group">
+            <label>生成元 g（需满足 g^q mod p = 1，如 p=23 时 g=2）</label>
+            <input type="number" id="setup-g" value="2" min="2">
+          </div>
+          <button class="btn" onclick="doSetup()">生成系统参数</button>
+        </div>
+        <div class="card">
+          <h3>生成结果</h3>
+          <div id="setup-result" class="result-box">
+            <p class="placeholder">点击"生成系统参数"开始</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>参数验证</h3>
+        <div id="setup-verify" class="verify-box"></div>
+      </div>
+    </section>
+
+    <!-- ===== 加密演示 ===== -->
+    <section id="page-encrypt" class="page">
+      <h1>🔒 加密演示</h1>
+      <p class="desc">逐步展示 ElGamal 加密和解密的完整过程。</p>
+
+      <div class="card-row">
+        <div class="card">
+          <h3>加密</h3>
+          <div class="form-group">
+            <label>消息 m（明文）</label>
+            <input type="number" id="enc-msg" value="1" min="0" max="10">
+          </div>
+          <div class="form-group">
+            <label>素数 p</label>
+            <input type="number" id="enc-p" value="23">
+          </div>
+          <div class="form-group">
+            <label>生成元 g</label>
+            <input type="number" id="enc-g" value="2">
+          </div>
+          <button class="btn" onclick="doEncrypt()">加密</button>
+        </div>
+        <div class="card">
+          <h3>解密</h3>
+          <button class="btn" onclick="doDecrypt()" id="btn-decrypt" disabled>解密密文</button>
+          <div id="decrypt-result" class="result-box">
+            <p class="placeholder">先加密，再解密</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>加密过程可视化</h3>
+        <div id="encrypt-steps" class="steps-box"></div>
+      </div>
+
+      <div class="card">
+        <h3>解密过程可视化</h3>
+        <div id="decrypt-steps" class="steps-box"></div>
+      </div>
+    </section>
+
+    <!-- ===== 投票模拟 ===== -->
+    <section id="page-vote" class="page">
+      <h1>🗳️ 投票模拟</h1>
+      <p class="desc">模拟多人投票，展示同态加密计票过程。</p>
+
+      <div class="card-row">
+        <div class="card">
+          <h3>投票配置</h3>
+          <div class="form-group">
+            <label>素数 p</label>
+            <input type="number" id="vote-p" value="23">
+          </div>
+          <div class="form-group">
+            <label>生成元 g</label>
+            <input type="number" id="vote-g" value="2">
+          </div>
+          <div class="form-group">
+            <label>选民数量</label>
+            <input type="number" id="vote-count" value="5" min="1" max="20">
+          </div>
+          <button class="btn" onclick="randomVotes()">🎲 随机生成投票</button>
+          <div id="vote-list" class="vote-list"></div>
+          <button class="btn btn-primary" onclick="doVote()" id="btn-vote" disabled>🗳️ 开始投票</button>
+        </div>
+        <div class="card">
+          <h3>投票结果</h3>
+          <div class="chart-container">
+            <canvas id="vote-chart"></canvas>
+          </div>
+          <div id="vote-result" class="result-box">
+            <p class="placeholder">先生成投票数据</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>同态加法过程</h3>
+        <div id="vote-steps" class="steps-box"></div>
+      </div>
+    </section>
+
+    <!-- ===== 零知识证明 ===== -->
+    <section id="page-proof" class="page">
+      <h1>🛡️ 零知识证明</h1>
+      <p class="desc">验证投票的正确性而不泄露投票内容。</p>
+
+      <div class="proof-tabs">
+        <button class="tab active" data-tab="keygen">密钥证明</button>
+        <button class="tab" data-tab="member">成员证明</button>
+        <button class="tab" data-tab="decrypt-proof">解密证明</button>
+      </div>
+
+      <!-- 密钥生成证明 -->
+      <div id="tab-keygen" class="tab-content active">
+        <div class="card-row">
+          <div class="card">
+            <h3>Schnorr 密钥证明</h3>
+            <p>证明持有者知道公钥 h=g<sup>sk</sup> 对应的私钥 sk，但不泄露 sk。</p>
+            <div class="form-group">
+              <label>素数 p</label>
+              <input type="number" id="kg-p" value="23">
+            </div>
+            <div class="form-group">
+              <label>生成元 g</label>
+              <input type="number" id="kg-g" value="2">
+            </div>
+            <button class="btn" onclick="doKeygenProof()">生成并验证证明</button>
+          </div>
+          <div class="card">
+            <h3>证明结果</h3>
+            <div id="keygen-result" class="result-box">
+              <p class="placeholder">点击生成证明</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>证明过程</h3>
+          <div id="keygen-steps" class="steps-box"></div>
+        </div>
+      </div>
+
+      <!-- 成员证明 -->
+      <div id="tab-member" class="tab-content">
+        <div class="card-row">
+          <div class="card">
+            <h3>析取 Chaum-Pedersen 成员证明</h3>
+            <p>证明加密的投票值是 0 或 1，但不揭示具体值。</p>
+            <div class="form-group">
+              <label>投票值</label>
+              <select id="mem-vote">
+                <option value="1">赞成 (1)</option>
+                <option value="0">反对 (0)</option>
+              </select>
+            </div>
+            <button class="btn" onclick="doMembershipProof()">生成并验证证明</button>
+          </div>
+          <div class="card">
+            <h3>证明结果</h3>
+            <div id="member-result" class="result-box">
+              <p class="placeholder">点击生成证明</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>证明过程</h3>
+          <div id="member-steps" class="steps-box"></div>
+        </div>
+      </div>
+
+      <!-- 解密证明 -->
+      <div id="tab-decrypt-proof" class="tab-content">
+        <div class="card-row">
+          <div class="card">
+            <h3>Chaum-Pedersen 解密证明</h3>
+            <p>证明解密使用了正确的私钥。</p>
+            <div class="form-group">
+              <label>消息 m</label>
+              <input type="number" id="dp-msg" value="1" min="0">
+            </div>
+            <button class="btn" onclick="doDecryptProof()">生成并验证证明</button>
+          </div>
+          <div class="card">
+            <h3>证明结果</h3>
+            <div id="dp-result" class="result-box">
+              <p class="placeholder">点击生成证明</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>证明过程</h3>
+          <div id="dp-steps" class="steps-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 椭圆曲线 ===== -->
+    <section id="page-ec" class="page">
+      <h1>📐 椭圆曲线 ElGamal</h1>
+      <p class="desc">基于 secp256k1 椭圆曲线的 ElGamal 加密投票系统。</p>
+
+      <div class="card-row">
+        <div class="card">
+          <h3>系统设置</h3>
+          <p>曲线: secp256k1 (y² = x³ + 7)</p>
+          <button class="btn" onclick="doECSetup()">生成 EC 密钥对</button>
+          <div id="ec-setup-result" class="result-box">
+            <p class="placeholder">点击生成</p>
+          </div>
+        </div>
+        <div class="card">
+          <h3>EC 投票</h3>
+          <div class="form-group">
+            <label>选民数量</label>
+            <input type="number" id="ec-count" value="5" min="1" max="10">
+          </div>
+          <button class="btn" onclick="doECVote()">EC 投票</button>
+          <div id="ec-vote-result" class="result-box">
+            <p class="placeholder">先生成密钥对</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>EC 投票结果</h3>
+        <div class="chart-container">
+          <canvas id="ec-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>椭圆曲线原理</h3>
+        <div class="ec-原理">
+          <div class="原理-item">
+            <h4>曲线方程</h4>
+            <code>y² = x³ + 7 (mod p)</code>
+            <p>secp256k1 是比特币使用的椭圆曲线，提供 128 位安全强度。</p>
+          </div>
+          <div class="原理-item">
+            <h4>标量乘法</h4>
+            <code>Q = k·G</code>
+            <p>椭圆曲线上的"乘法"实际上是点的重复加法，是单向函数。</p>
+          </div>
+          <div class="原理-item">
+            <h4>安全性</h4>
+            <code>已知 Q 和 G，求 k 是困难的</code>
+            <p>椭圆曲线离散对数问题（ECDLP），目前没有已知的多项式时间算法。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

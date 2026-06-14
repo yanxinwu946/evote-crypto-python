@@ -1,0 +1,407 @@
+/* ============================================================
+   电子投票密码学可视化 — 样式表
+   ============================================================ */
+
+:root {
+  --bg: #0f172a;
+  --bg2: #1e293b;
+  --bg3: #334155;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --purple: #a855f7;
+  --border: #475569;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* 侧边导航 */
+.sidebar {
+  width: 240px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+
+.sidebar-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header h2 { font-size: 20px; color: var(--accent2); }
+.sidebar-header .subtitle { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+.nav-list { list-style: none; padding: 12px 0; flex: 1; }
+
+.nav-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text2);
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active {
+  background: rgba(59,130,246,0.1);
+  color: var(--accent2);
+  border-left-color: var(--accent);
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text2);
+}
+
+/* 主内容区 */
+.content {
+  margin-left: 240px;
+  flex: 1;
+  padding: 32px 40px;
+  min-height: 100vh;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--accent2), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.desc { color: var(--text2); margin-bottom: 24px; font-size: 15px; }
+
+/* 卡片 */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.card h3 {
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: var(--accent2);
+}
+
+.card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* 架构网格 */
+.arch-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.arch-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.arch-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+
+.arch-icon { font-size: 40px; margin-bottom: 12px; }
+.arch-card h3 { font-size: 15px; margin-bottom: 8px; color: var(--text); }
+.arch-card p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+/* 流程步骤 */
+.flow-section { margin-bottom: 32px; }
+.flow-section h2 { font-size: 18px; margin-bottom: 16px; color: var(--text); }
+
+.flow-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flow-step {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.step-num {
+  display: inline-block;
+  width: 28px; height: 28px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  line-height: 28px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.flow-arrow { font-size: 24px; color: var(--accent); }
+
+/* 公式 */
+.formula-section { margin-bottom: 32px; }
+.formula-section h2 { font-size: 18px; margin-bottom: 16px; color: var(--text); }
+
+.formula-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.formula-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.formula-card h4 { font-size: 14px; color: var(--accent2); margin-bottom: 10px; }
+.formula-card code { font-size: 14px; color: var(--green); line-height: 1.8; }
+
+/* 表单 */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus { border-color: var(--accent); }
+
+/* 按钮 */
+.btn {
+  padding: 10px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn:hover { background: var(--accent2); }
+.btn:disabled { background: var(--bg3); color: var(--text2); cursor: not-allowed; }
+.btn-primary { background: var(--green); }
+.btn-primary:hover { background: #16a34a; }
+
+/* 结果框 */
+.result-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 80px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.result-box .placeholder { color: var(--text2); font-style: italic; }
+.result-box .success { color: var(--green); }
+.result-box .error { color: var(--red); }
+.result-box code { color: var(--yellow); background: var(--bg3); padding: 2px 6px; border-radius: 4px; }
+
+/* 步骤可视化 */
+.steps-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 60px;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.step-item:last-child { border-bottom: none; }
+
+.step-label {
+  background: var(--accent);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: center;
+}
+
+.step-label.green { background: var(--green); }
+.step-label.yellow { background: var(--yellow); color: #000; }
+.step-label.purple { background: var(--purple); }
+.step-label.red { background: var(--red); }
+
+.step-content code {
+  color: var(--yellow);
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* 投票列表 */
+.vote-list {
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vote-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.vote-chip.yes { background: rgba(34,197,94,0.2); color: var(--green); border: 1px solid var(--green); }
+.vote-chip.no { background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid var(--red); }
+
+/* 图表容器 */
+.chart-container {
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+/* 证明标签页 */
+.proof-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+.tab:hover:not(.active) { border-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* EC 原理 */
+.ec-原理 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.原理-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.原理-item h4 { color: var(--accent2); margin-bottom: 8px; font-size: 14px; }
+.原理-item code { color: var(--green); font-size: 14px; }
+.原理-item p { color: var(--text2); font-size: 13px; margin-top: 8px; line-height: 1.5; }
+
+/* 验证框 */
+.verify-box {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.verify-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.verify-item:last-child { border-bottom: none; }
+.verify-pass { color: var(--green); }
+.verify-fail { color: var(--red); }
+
+/* 动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page.active { animation: fadeIn 0.3s ease; }
+
+/* 响应式 */
+@media (max-width: 1200px) {
+  .arch-grid { grid-template-columns: repeat(2, 1fr); }
+  .formula-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .sidebar { width: 200px; }
+  .content { margin-left: 200px; padding: 20px; }
+  .card-row { grid-template-columns: 1fr; }
+}
